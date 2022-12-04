@@ -1,0 +1,19 @@
+[package]
+name = "lpcg"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "lpcg"
+path = "src/lib.rs"
+
+[[bin]]
+name = "lpcg-build"
+path = "src/bin/build.rs"
+
+# [[bin]]
+# name = "lpcg-list"
+# path = "src/bin/list.rs"
+
+[dependencies]
+image = { version = "0.24.3", default-features = false, features = ["png"] }
