@@ -11,9 +11,5 @@ path = "src/lib.rs"
 name = "lpcg-build"
 path = "src/bin/build.rs"
 
-# [[bin]]
-# name = "lpcg-list"
-# path = "src/bin/list.rs"
-
 [dependencies]
 image = { version = "0.24.3", default-features = false, features = ["png"] }

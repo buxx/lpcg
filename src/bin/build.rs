@@ -4,6 +4,10 @@ use lpcg::{builder::Builder, input::Input};
 
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        return Err("❌ You must provide arguments".to_string());
+    }
+
     let in_ = &args[1];
     let last = &args.last();
     let out = match last {
