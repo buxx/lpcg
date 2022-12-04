@@ -4,6 +4,7 @@ use lpcg::{builder::Builder, input::Input};
 
 fn main() -> Result<(), String> {
     let args: Vec<String> = env::args().collect();
+    let in_ = &args[1];
     let last = &args.last();
     let out = match last {
         Some(out) => out,
@@ -18,7 +19,7 @@ fn main() -> Result<(), String> {
         ));
     }
 
-    let input = match Input::from_str(&args[1..args.len() - 1].join(" ")) {
+    let input = match Input::from_str(&args[2..args.len() - 1].join(" ")) {
         Ok(input) => input,
         Err(error) => {
             return Err(format!(
@@ -27,7 +28,7 @@ fn main() -> Result<(), String> {
             ))
         }
     };
-    let build_result = Builder::new("./spritesheets".to_string()).build(input);
+    let build_result = Builder::new(in_.to_string()).build(input);
 
     for error in &build_result.errors {
         println!("❗ {}", error);

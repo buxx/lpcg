@@ -16,16 +16,16 @@ impl Builder {
 
     pub fn build(&self, input: Input) -> BuildResult {
         let mut result = BuildResult::new();
-        let mut final_image =
-            match image::open(&format!("{}/background.png", self.spritesheets_source)) {
-                Ok(image) => image,
-                Err(error) => {
-                    return BuildResult::error(BuildError::UnexpectedError(format!(
-                        "Unable to open background.png file : {}",
-                        error
-                    )))
-                }
-            };
+        let background = &format!("{}/background.png", self.spritesheets_source);
+        let mut final_image = match image::open(&background) {
+            Ok(image) => image,
+            Err(error) => {
+                return BuildResult::error(BuildError::UnexpectedError(format!(
+                    "Unable to open '{}' file : {}",
+                    background, error
+                )))
+            }
+        };
 
         for layer in input.layers() {
             let layer_image = match image::open(&Path::new(&format!(
