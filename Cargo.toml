@@ -2,6 +2,15 @@
 name = "lpcg"
 version = "0.1.0"
 edition = "2021"
+authors = ["Bastien Sevajol <bastien@sevajol.fr>"]
+description = "A lib to generate character spritesheets based on LPC"
+homepage = "https://github.com/buxx/lpcg/"
+documentation = "https://github.com/buxx/lpcg/"
+repository = "https://github.com/buxx/lpcg/"
+readme = "README.md"
+license = " AGPL-3.0"
+categories = ["game-development", "multimedia"]
+keywords = ["gamedev", "spritesheet"]
 
 [lib]
 name = "lpcg"
