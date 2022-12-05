@@ -11,6 +11,9 @@ readme = "README.md"
 license = " AGPL-3.0"
 categories = ["game-development", "multimedia"]
 keywords = ["gamedev", "spritesheet"]
+exclude = [
+    "spritesheets/*",
+]
 
 [lib]
 name = "lpcg"
