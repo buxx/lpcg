@@ -1,29 +1,35 @@
-use std::env;
+use std::path::PathBuf;
 
 use lpcg::{builder::Builder, input::Input};
+use structopt::StructOpt;
+
+#[derive(Debug, StructOpt)]
+#[structopt(name = "build character spritesheet", about = "TODO")]
+struct Args {
+    #[structopt(parse(from_os_str))]
+    spritesheet: PathBuf,
+
+    #[structopt(required = true)]
+    identifiers: Vec<String>,
+
+    #[structopt(parse(from_os_str))]
+    output: PathBuf,
+
+    #[structopt(short, long)]
+    variant: Option<String>,
+}
 
 fn main() -> Result<(), String> {
-    let args: Vec<String> = env::args().collect();
-    if args.len() < 2 {
-        return Err("❌ You must provide arguments".to_string());
-    }
+    let opt = Args::from_args();
 
-    let in_ = &args[1];
-    let last = &args.last();
-    let out = match last {
-        Some(out) => out,
-        None => {
-            return Err("❌ You must provide arguments".to_string());
-        }
-    };
-    if !out.ends_with(".png") {
+    if !opt.output.to_string_lossy().ends_with(".png") {
         return Err(format!(
             "❌ given output filename ('{}') must end with .png",
-            out
+            &opt.output.to_string_lossy()
         ));
     }
 
-    let input = match Input::from_str(&args[2..args.len() - 1].join(" ")) {
+    let input = match Input::from_str(&opt.identifiers.to_vec().join(" "), opt.variant) {
         Ok(input) => input,
         Err(error) => {
             return Err(format!(
@@ -32,15 +38,15 @@ fn main() -> Result<(), String> {
             ))
         }
     };
-    let build_result = Builder::new(in_.to_string()).build(input);
+    let build_result = Builder::new(opt.spritesheet).build(input);
 
     for error in &build_result.errors {
         println!("❗ {}", error);
     }
 
     if let Some(image) = build_result.output {
-        image.save(&out).unwrap();
-        println!("✅ Generated file at '{}'", out);
+        image.save(&opt.output).unwrap();
+        println!("✅ Generated file at '{}'", opt.output.to_string_lossy());
         Ok(())
     } else {
         Err("❌ No output builded".to_string())

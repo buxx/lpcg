@@ -11,5 +11,12 @@ path = "src/lib.rs"
 name = "lpcg-build"
 path = "src/bin/build.rs"
 
+[[bin]]
+name = "lpcg-inspect"
+path = "src/bin/inspect.rs"
+
 [dependencies]
 image = { version = "0.24.3", default-features = false, features = ["png"] }
+walkdir = "2.3.2"
+rand = "0.8.5"
+structopt = "0.3.23"

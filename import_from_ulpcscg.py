@@ -5,15 +5,6 @@ from pathlib import Path
 import struct
 import imghdr
 
-# PARSING = [
-#     ("body", "body/bodies/*/universal/"),
-#     ("head", "head/heads/*/universal/"),
-#     ("ears", "head/ears/*/"),
-#     ("arms_armour_plate", "arms/armour/plate/*/"),
-#     ("arms_bracers", "arms/bracers/*/"),
-#     ("bauldron", "bauldron/*/"),
-# ]
-
 
 def _png_size(image_path):
     with image_path.open("rb") as image_file:

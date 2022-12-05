@@ -1,42 +1,51 @@
-use std::{fmt::Display, path::Path, process::Output};
+use std::{
+    fmt::Display,
+    path::{Path, PathBuf},
+};
 
-use crate::input::Input;
+use crate::{input::Input, layer::Layer};
 use image::{imageops, DynamicImage};
 
 pub struct Builder {
-    spritesheets_source: String,
+    spritesheets: PathBuf,
 }
 
 impl Builder {
-    pub fn new(spritesheets_source: String) -> Self {
-        Self {
-            spritesheets_source,
-        }
+    pub fn new(spritesheets: PathBuf) -> Self {
+        Self { spritesheets }
     }
 
     pub fn build(&self, input: Input) -> BuildResult {
         let mut result = BuildResult::new();
-        let background = &format!("{}/background.png", self.spritesheets_source);
-        let mut final_image = match image::open(&background) {
+        let mut background_path = self.spritesheets.clone();
+        background_path.push("background.png");
+        let mut final_image = match image::open(&background_path) {
             Ok(image) => image,
             Err(error) => {
                 return BuildResult::error(BuildError::UnexpectedError(format!(
-                    "Unable to open '{}' file : {}",
-                    background, error
+                    "Unable to open '{:?}' file : {}",
+                    background_path, error
                 )))
             }
         };
 
         for layer in input.layers() {
-            let layer_image = match image::open(&Path::new(&format!(
-                "{}/{}",
-                self.spritesheets_source, layer,
-            ))) {
-                Ok(image) => image,
+            let layer_path = match layer.path(Path::new(&self.spritesheets)) {
+                Ok(layer_path) => layer_path,
                 Err(error) => {
                     result
                         .errors
                         .push(BuildError::LayerError(layer.clone(), error.to_string()));
+                    continue;
+                }
+            };
+            let layer_image = match image::open(&layer_path) {
+                Ok(image) => image,
+                Err(error) => {
+                    result.errors.push(BuildError::LayerError(
+                        layer.clone(),
+                        format!("{:?} : '{}'", layer_path, error),
+                    ));
                     continue;
                 }
             };
@@ -49,7 +58,7 @@ impl Builder {
 }
 
 pub enum BuildError {
-    LayerError(String, String),
+    LayerError(Layer, String),
     UnexpectedError(String),
 }
 
@@ -57,7 +66,7 @@ impl Display for BuildError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             BuildError::LayerError(layer, error) => {
-                f.write_str(&format!("Layer error '{}' : '{}'", layer, error))
+                f.write_str(&format!("Layer error '{}' : '{}'", layer.name(), error))
             }
             BuildError::UnexpectedError(error) => {
                 f.write_str(&format!("Unexpected error : '{}'", error))

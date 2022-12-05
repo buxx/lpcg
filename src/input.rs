@@ -1,8 +1,10 @@
 use std::fmt::Display;
 
+use crate::layer::{Layer, Part};
+
 #[derive(Default)]
 pub struct Input {
-    layers: Vec<String>,
+    layers: Vec<Layer>,
 }
 
 impl Input {
@@ -12,14 +14,25 @@ impl Input {
         }
     }
 
-    pub fn from_str(input: &str) -> Result<Self, Error> {
+    pub fn from_str(input: &str, variant: Option<String>) -> Result<Self, Error> {
         let mut layers = vec![];
 
         for layer_str in input.split(" ") {
             let mut layer = vec![];
-            for part in layer_str.split("::") {
-                if part.len() > 0 {
-                    layer.push(part.to_string());
+            let parts_str: Vec<String> = layer_str.split("::").map(str::to_string).collect();
+            for (i, part_str) in parts_str.iter().enumerate() {
+                if part_str.len() > 0 {
+                    let part = match &part_str[..] {
+                        "*" => Part::WildCard,
+                        _ => {
+                            if i == parts_str.len() - 1 {
+                                Part::Image(part_str.to_string())
+                            } else {
+                                Part::Folder(part_str.to_string())
+                            }
+                        }
+                    };
+                    layer.push(part);
                 }
             }
 
@@ -27,7 +40,7 @@ impl Input {
                 return Err(Error::NoStrReadableInput);
             }
 
-            layers.push(format!("{}.png", layer.join("/")));
+            layers.push(Layer::new(layer_str.to_string(), layer, variant.clone()));
         }
 
         if layers.len() == 0 {
@@ -37,12 +50,12 @@ impl Input {
         Ok(Self { layers })
     }
 
-    pub fn layer(mut self, selector: Vec<&str>) -> Self {
-        self.layers.push(format!("{}.png", selector.join("/")));
+    pub fn layer(mut self, layer: Layer) -> Self {
+        self.layers.push(layer);
         self
     }
 
-    pub fn layers(&self) -> &Vec<String> {
+    pub fn layers(&self) -> &Vec<Layer> {
         &self.layers
     }
 }
