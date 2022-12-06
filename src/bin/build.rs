@@ -4,7 +4,7 @@ use lpcg::{builder::Builder, input::Input};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(name = "build character spritesheet", about = "TODO")]
+#[structopt(name = "build character spritesheet")]
 struct Args {
     #[structopt(parse(from_os_str))]
     spritesheet: PathBuf,
