@@ -14,33 +14,37 @@ impl Input {
         }
     }
 
-    pub fn from_str(input: &str, variant: Option<String>) -> Result<Self, Error> {
+    pub fn from_str(input: &str) -> Result<Self, Error> {
         let mut layers = vec![];
 
         for layer_str in input.split(" ") {
-            let mut layer = vec![];
+            let mut layer_parts = vec![];
             let parts_str: Vec<String> = layer_str.split("::").map(str::to_string).collect();
             for (i, part_str) in parts_str.iter().enumerate() {
                 if part_str.len() > 0 {
-                    let part = match &part_str[..] {
-                        "*" => Part::WildCard,
-                        _ => {
-                            if i == parts_str.len() - 1 {
-                                Part::Image(part_str.to_string())
-                            } else {
-                                Part::Folder(part_str.to_string())
-                            }
+                    let part = if part_str[..].contains("*") {
+                        if part_str[..].ends_with("*") {
+                            Part::WildCard(None)
+                        } else {
+                            let variant = &part_str[2..part_str.len() - 1];
+                            Part::WildCard(Some(variant.to_string()))
+                        }
+                    } else {
+                        if i == parts_str.len() - 1 {
+                            Part::Image(part_str.to_string())
+                        } else {
+                            Part::Folder(part_str.to_string())
                         }
                     };
-                    layer.push(part);
+                    layer_parts.push(part);
                 }
             }
 
-            if layer.len() == 0 {
+            if layer_parts.len() == 0 {
                 return Err(Error::NoStrReadableInput);
             }
 
-            layers.push(Layer::new(layer_str.to_string(), layer, variant.clone()));
+            layers.push(Layer::new(layer_str.to_string(), layer_parts));
         }
 
         if layers.len() == 0 {

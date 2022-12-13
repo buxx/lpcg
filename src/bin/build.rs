@@ -14,9 +14,6 @@ struct Args {
 
     #[structopt(parse(from_os_str))]
     output: PathBuf,
-
-    #[structopt(short, long)]
-    variant: Option<String>,
 }
 
 fn main() -> Result<(), String> {
@@ -29,7 +26,7 @@ fn main() -> Result<(), String> {
         ));
     }
 
-    let input = match Input::from_str(&opt.identifiers.to_vec().join(" "), opt.variant) {
+    let input = match Input::from_str(&opt.identifiers.to_vec().join(" ")) {
         Ok(input) => input,
         Err(error) => {
             return Err(format!(

@@ -57,6 +57,7 @@ impl Builder {
     }
 }
 
+#[derive(Clone)]
 pub enum BuildError {
     LayerError(Layer, String),
     UnexpectedError(String),

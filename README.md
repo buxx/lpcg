@@ -18,13 +18,13 @@ A random file selection can be set with `*` like this :
 
     body::bodies::female::fur_tan head::heads::rabbit::*
 
-A *variant* can be given. In this case, if folder contain the variant image, it is selected instead other files.
+A *variant* can be given (eg. `body::bodies::*(light)`). In this case, if folder contain the variant image, it is selected instead other files.
 
 ## Example
 
 Following layer identifiers with *light* variant produce for example :
 
-    body::bodies::* head::heads::* legs::pantaloons::*
+    body::bodies::*(light) head::heads::*(light) legs::pantaloons::*(light)
 
 **build 1** :
 
@@ -40,8 +40,6 @@ Following layer identifiers with *light* variant produce for example :
 
 ## As Rust lib
 
-*TODO: publish a crate on crates.io*
-
 Use `input::Input` to represent layers and `builder::Builder` to build the output image.
 
 There is a rapid example :
@@ -51,7 +49,7 @@ use std::path::PathBuf;
 use lpcg::{builder::Builder, input::Input};
 
 fn main() -> Result<(), String> {
-    let input = match Input::from_str("body::bodies::female::fur_tan head::heads::rabbit::fur_tan", None).unwrap();
+    let input = match Input::from_str("body::bodies::female::fur_tan head::heads::rabbit::fur_tan").unwrap();
     let image = Builder::new(PathBuf::from("./spritesheets")).build(input).unwrap();
     image.save(&PathBuf::from("./out.png")).unwrap();
 }
@@ -63,7 +61,7 @@ Where `None` can be the variant, like `Some("light")`.
 
 Image build example usage : 
 
-    lpcg-build ./spritesheets "body::bodies::*" "head::heads::*" "legs::pantaloons::*" out.png --variant light
+    lpcg-build ./spritesheets "body::bodies::*(light)" "head::heads::*(light)" "legs::pantaloons::*" out.png
 
 ## Add new spritesheets
 

@@ -9,16 +9,11 @@ use std::path::{Path, PathBuf};
 pub struct Layer {
     name: String,
     parts: Vec<Part>,
-    variant: Option<String>,
 }
 
 impl Layer {
-    pub fn new(name: String, parts: Vec<Part>, variant: Option<String>) -> Self {
-        Self {
-            name,
-            parts,
-            variant,
-        }
+    pub fn new(name: String, parts: Vec<Part>) -> Self {
+        Self { name, parts }
     }
 
     pub fn name(&self) -> &str {
@@ -33,14 +28,18 @@ impl Layer {
             match part {
                 Part::Folder(folder_name) => final_path.push(folder_name),
                 Part::Image(file_name) => final_path.push(format!("{}.png", file_name)),
-                Part::WildCard => final_path = self.random_from(&final_path)?,
+                Part::WildCard(variant) => final_path = self.random_from(&final_path, variant)?,
             }
         }
 
         Ok(final_path)
     }
 
-    fn random_from(&self, relative_path: &PathBuf) -> Result<PathBuf, Error> {
+    fn random_from(
+        &self,
+        relative_path: &PathBuf,
+        variant: &Option<String>,
+    ) -> Result<PathBuf, Error> {
         let mut entries = vec![];
         for entry in WalkDir::new(&relative_path)
             .follow_links(true)
@@ -48,7 +47,7 @@ impl Layer {
             .filter_map(|e| e.ok())
             .filter(|item| item.file_type().is_dir())
         {
-            if let Some(variant) = &self.variant {
+            if let Some(variant) = &variant {
                 // If folder contain variant, take it
                 if let Some(variant_file) = fs::read_dir(entry.path())
                     .unwrap()
@@ -94,7 +93,7 @@ impl Layer {
 
 #[derive(Clone)]
 pub enum Part {
-    WildCard,
+    WildCard(Option<String>),
     Folder(String),
     Image(String),
 }

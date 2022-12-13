@@ -1,6 +1,6 @@
 [package]
 name = "lpcg"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["Bastien Sevajol <bastien@sevajol.fr>"]
 description = "A lib to generate character spritesheets based on LPC"
